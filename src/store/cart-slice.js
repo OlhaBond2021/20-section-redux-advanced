@@ -5,6 +5,7 @@ const cartSlice = createSlice({
   initialState: {
     items: [],
     totalQuantity: 0,
+    changed: false,
   },
   reducers: {
     replaceCart(state, action) {
@@ -15,13 +16,15 @@ const cartSlice = createSlice({
       const newItem = action.payload;
       const existingItem = state.items.find((item) => item.id === newItem.id);
       state.totalQuantity++;
+      state.changed = true;
       if (!existingItem) {
-        state.items.push({     //така маніпуляція можлива завдяки використанню Redux toolkit
-          id: newItem.id,  // інакше це вважалося б пряма зміна state - що заборонено без Redux toolkit!
+        state.items.push({
+          //така маніпуляція можлива завдяки використанню Redux toolkit
+          id: newItem.id, // інакше це вважалося б пряма зміна state - що заборонено без Redux toolkit!
           price: newItem.price,
           quantity: 1,
           totalPrice: newItem.price,
-          name: newItem.title
+          name: newItem.title,
         });
       } else {
         existingItem.quantity++;
@@ -30,10 +33,11 @@ const cartSlice = createSlice({
     },
     removeItemFromCart(state, action) {
       const id = action.payload;
-      const existingItem = state.items.find(item => item.id === id);
+      const existingItem = state.items.find((item) => item.id === id);
       state.totalQuantity--;
+      state.changed = true;
       if (existingItem.quantity === 1) {
-        state.items = state.items.filter(item => item.id !== id);
+        state.items = state.items.filter((item) => item.id !== id);
       } else {
         existingItem.quantity--;
         existingItem.totalPrice = existingItem.totalPrice - existingItem.price;
@@ -41,6 +45,8 @@ const cartSlice = createSlice({
     },
   },
 });
+
+
 
 export const cartActions = cartSlice.actions;
 
